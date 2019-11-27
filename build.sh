@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -rf /tmp/docker-compose/
 COMPOSER_VERSION="1.24.1"
 pwd=$(pwd)
 git clone -b ${COMPOSER_VERSION} https://github.com/docker/compose.git /tmp/docker-compose
