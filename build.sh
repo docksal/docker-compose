@@ -5,6 +5,7 @@ COMPOSER_VERSION="1.24.1"
 pwd=$(pwd)
 git clone -b ${COMPOSER_VERSION} https://github.com/docker/compose.git /tmp/docker-compose
 cp linux-alpine /tmp/docker-compose/script/build/
+cp Dockerfile /tmp/docker-compose/
 cd /tmp/docker-compose/
 ./script/build/linux-alpine
 mkdir -p ${pwd}/bin/alpine/
