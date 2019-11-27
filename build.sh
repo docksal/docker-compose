@@ -1,19 +1,13 @@
 #!/bin/bash
 
-rm -rf /tmp/docker-compose/
-COMPOSER_VERSION="1.24.1"
-pwd=$(pwd)
-git clone -b ${COMPOSER_VERSION} https://github.com/docker/compose.git /tmp/docker-compose
-cp linux-alpine /tmp/docker-compose/script/build/
-cp Dockerfile /tmp/docker-compose/
-cd /tmp/docker-compose/
-./script/build/linux-alpine
-mkdir -p ${pwd}/bin/alpine/
-cp dist/docker-compose-Linux-$(uname -m) ${pwd}/bin/alpine/docker-compose
-cd ${pwd}
-rm -rf /tmp/docker-compose/
+COMPOSE_VERSION=${COMPOSE_VERSION:-1.25.0}
 
-git add -A
-git commit -m "Build version ${COMPOSER_VERSION}"
-git tag v${COMPOSER_VERSION}
-git push origin v${COMPOSER_VERSION}
+TAG="docksal/docker-compose:${COMPOSE_VERSION}"
+
+docker build -t "${TAG}" -f ${COMPOSE_VERSION}/Dockerfile ./${COMPOSE_VERSION} --build-arg COMPOSE_VERSION=${COMPOSE_VERSION}
+
+mkdir -p ${COMPOSE_VERSION}/bin/alpine/
+TMP_CONTAINER=$(docker create "${TAG}")
+docker cp "${TMP_CONTAINER}":/usr/local/bin/docker-compose "${COMPOSE_VERSION}/bin/alpine/"
+docker container rm -f "${TMP_CONTAINER}"
+docker image rm -f "${TAG}"
